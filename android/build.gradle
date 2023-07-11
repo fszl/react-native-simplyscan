@@ -34,7 +34,7 @@ android {
         targetSdkVersion 31
         versionCode 1
         // get version name from package.json version
-        versionName "1.0.0"
+        versionName "1.0.1"
     }
     lintOptions {
         abortOnError false
