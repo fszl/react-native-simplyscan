@@ -6,12 +6,12 @@
   "license": "Unlicense",
   "repository": {
     "type": "git",
-    "url": "https://github.com/MrToph/react-native-android-library-boilerplate.git"
+    "url": "https://github.com/fszl/react-native-simplyscan.git"
   },
   "bugs": {
-    "url": "https://github.com/MrToph/react-native-android-library-boilerplate/issues"
+    "url": "https://github.com/fszl/react-native-simplyscan/issues"
   },
-  "homepage": "https://github.com/MrToph/react-native-android-library-boilerplate",
+  "homepage": "https://github.com/fszl/react-native-simplyscan.git",
   "keywords": [
     "react-native",
     "android",
