@@ -10,7 +10,6 @@ const ScanView = Platform.select({
 
 export default class SimplyScanView extends React.Component {
   render() {
-    const { width = "100%", height = 200 } = this.props;
-    return <ScanView {...this.props} style={{ width, height }} />;
+    return <ScanView {...this.props} />;
   }
 }
