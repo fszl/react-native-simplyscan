@@ -8,7 +8,7 @@ def computeVersionName() {
 }
 
 buildscript {
-    ext.kotlin_version = '1.6.20'
+    ext.kotlin_version = '1.6.21'
 
     repositories {
         google()
@@ -17,7 +17,7 @@ buildscript {
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:4.1.0'
+        classpath 'com.android.tools.build:gradle:4.2.2'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
     }
 }
@@ -26,15 +26,15 @@ apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 
 android {
-    compileSdkVersion 31
-    buildToolsVersion "30.0.2"
+    compileSdkVersion 28
+    buildToolsVersion "28.0.3"
 
     defaultConfig {
-        minSdkVersion 21
-        targetSdkVersion 31
-        versionCode 1
+        minSdkVersion 23
+        targetSdkVersion 28
+        versionCode 3
         // get version name from package.json version
-        versionName "1.0.1"
+        versionName "1.0.3"
     }
     lintOptions {
         abortOnError false
@@ -55,5 +55,4 @@ dependencies {
     implementation "com.facebook.react:react-native:+"
     implementation 'com.github.kuamanet:android-document-scanner:0.1.8'
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
-    implementation "com.pierfrancescosoffritti.androidyoutubeplayer:core:8.0.1"  
 }

@@ -7,17 +7,18 @@ import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.uimanager.ReactShadowNode;
 import com.facebook.react.uimanager.ViewManager;
 
+import java.util.*;
+
 public class Package : ReactPackage {
 
-    override fun createViewManagers(reactContext: ReactApplicationContext): 
-      MutableList<ViewManager<out View, out ReactShadowNode<*>>> {
-        return mutableListOf(
-          SimplyScanView()
-        )
+
+    override fun createNativeModules(reactContext: ReactApplicationContext): List<NativeModule> {
+        val modules = ArrayList<NativeModule>()
+        modules.add(SimplyScanView(reactContext))
+        return modules
     }
 
-    override fun createNativeModules(reactContext: ReactApplicationContext): 
-      MutableList<NativeModule> {
-        return mutableListOf()
+    override fun createViewManagers(reactContext: ReactApplicationContext): List<ViewManager<*, *>> {
+        return Collections.emptyList<ViewManager<*, *>>()
     }
 }
