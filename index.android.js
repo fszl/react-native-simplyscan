@@ -1,15 +1,12 @@
 "use strict";
-
+/* 
 import React from "react";
 import { requireNativeComponent, Platform, View } from "react-native";
 
-const ScanView = Platform.select({
-  ios: View,
-  android: requireNativeComponent("SimplyScanView"),
-});
+export default function SimplyScan() {
+  const Scan = requireNativeComponent("SimplyScanView");
+  Scan.startScan();
+} */
 
-export default class SimplyScanView extends React.Component {
-  render() {
-    return <ScanView {...this.props} />;
-  }
-}
+import { NativeModules } from "react-native";
+module.exports = NativeModules.SimplyScanView;
