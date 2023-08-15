@@ -8,5 +8,6 @@ export default function SimplyScan() {
   Scan.startScan();
 } */
 
-import { NativeModules } from "react-native";
+import { NativeModules} from "react-native";
+
 module.exports = NativeModules.SimplyScanView;
