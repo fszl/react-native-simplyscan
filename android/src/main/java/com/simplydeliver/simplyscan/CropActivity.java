@@ -26,8 +26,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.List;
 
-import android.util.Log;
-
 import me.pqpo.smartcropperlib.SmartCropper;
 import me.pqpo.smartcropperlib.view.CropImageView;
 import pub.devrel.easypermissions.EasyPermissions;
@@ -40,6 +38,7 @@ public class CropActivity extends AppCompatActivity implements EasyPermissions.P
     private static final int REQUEST_CODE_SELECT_ALBUM = 200;
 
     CropImageView ivCrop;
+    private static Context RCTContext;
     Button btnCancel;
     Button btnOk;
 
@@ -49,6 +48,7 @@ public class CropActivity extends AppCompatActivity implements EasyPermissions.P
     File tempFile;
 
     public static Intent getJumpIntent(Context context, boolean fromAlbum, File croppedFile) {
+        RCTContext = context;
         Intent intent = new Intent(context, CropActivity.class);
         intent.putExtra(EXTRA_FROM_ALBUM, fromAlbum);
         intent.putExtra(EXTRA_CROPPED_FILE, croppedFile);
@@ -138,7 +138,7 @@ public class CropActivity extends AppCompatActivity implements EasyPermissions.P
             Intent startCameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
             Uri uri;
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                uri = FileProvider.getUriForFile(this, "com.scandemo.fileProvider", tempFile);
+                uri = FileProvider.getUriForFile(this, RCTContext.getPackageName() + ".fileProvider", tempFile);
             } else {
                 uri = Uri.fromFile(tempFile);
             }
@@ -158,8 +158,6 @@ public class CropActivity extends AppCompatActivity implements EasyPermissions.P
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        Log.d("THIS IS MY TAG", String.valueOf(requestCode));
-            Log.d("THIS IS MY TAG", String.valueOf(resultCode));
         if (resultCode != RESULT_OK) {
             setResult(RESULT_CANCELED);
             finish();
