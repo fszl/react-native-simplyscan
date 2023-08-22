@@ -24,8 +24,15 @@ import com.facebook.react.bridge.Promise;
 import android.util.Log;
 
 import java.io.File;
+import java.lang.System;
+import java.util.Date;
+import java.util.Random;
+import java.text.DateFormat;  
+import java.text.SimpleDateFormat;   
+import java.util.Calendar;  
 import java.io.ByteArrayOutputStream;
 import android.util.Base64;
+import java.lang.StringBuilder;
 
 public class Module extends ReactContextBaseJavaModule implements ActivityEventListener {
 
@@ -51,10 +58,11 @@ public class Module extends ReactContextBaseJavaModule implements ActivityEventL
                 return;
             }*/
             if (requestCode == 100 && photoFile.exists()) {
-                Bitmap bitmap = BitmapFactory.decodeFile(photoFile.getPath());
-                String photo = BitMapToString(bitmap);
+
+                /*Bitmap bitmap = BitmapFactory.decodeFile(photoFile.getPath());
+                String photo = BitMapToString(bitmap);*/
                 if (scanPromise != null) {
-                    scanPromise.resolve(photo);
+                    scanPromise.resolve(photoFile.getPath());
                 }
             }
             scanPromise = null;
@@ -78,7 +86,7 @@ public class Module extends ReactContextBaseJavaModule implements ActivityEventL
 
         scanPromise = promise;
 
-        photoFile = new File(context.getExternalFilesDir("img"), "scan.jpg");
+        photoFile = new File(context.getExternalFilesDir("img"), generateUniqueFileName() + ".jpg");
 
         Intent intent = new Intent(context, CropActivity.class);
         intent.putExtra(EXTRA_FROM_ALBUM, false);
@@ -94,5 +102,27 @@ public class Module extends ReactContextBaseJavaModule implements ActivityEventL
         String temp= Base64.encodeToString(b, Base64.DEFAULT);
         return temp;
    }
+
+   public String generateUniqueFileName() {
+        String filename = "";
+        long millis = System.currentTimeMillis();
+        Date date = Calendar.getInstance().getTime();
+  
+        DateFormat dateFormat = new SimpleDateFormat("yyyy-mm-dd hh:mm:ss");  
+        String datetime = dateFormat.format(date);  
+        datetime = datetime.replace(" ", "");
+        datetime = datetime.replace("-", "");
+        datetime = datetime.replace(":", "");
+
+        String ALLOWED_CHARACTERS ="0123456789qwertyuiopasdfghjklzxcvbnm";
+        Random random = new Random();
+        StringBuilder sb = new StringBuilder(16);
+        for(int i = 0; i < 16; ++i) {
+            sb.append(ALLOWED_CHARACTERS.charAt(random.nextInt(ALLOWED_CHARACTERS.length())));
+        }
+    
+        filename = sb.toString() + "_" + datetime + "_" + millis;
+        return filename;
+    }
 
 }
