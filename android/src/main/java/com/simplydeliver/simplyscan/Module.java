@@ -19,6 +19,7 @@ import com.facebook.react.bridge.ActivityEventListener;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
+import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.Promise;
 
 import android.util.Log;
@@ -41,6 +42,9 @@ public class Module extends ReactContextBaseJavaModule implements ActivityEventL
     private Promise scanPromise;
     private static final String EXTRA_FROM_ALBUM = "extra_from_album";
     private static final String EXTRA_CROPPED_FILE = "extra_cropped_file";
+ 
+    int quality;
+    int nrofphotos;
 
     @Override
     public void onNewIntent(Intent intent) {
@@ -81,8 +85,11 @@ public class Module extends ReactContextBaseJavaModule implements ActivityEventL
     }
 
     @ReactMethod
-    public void startScan(final Promise promise) {
+    public void startScan(ReadableMap options, final Promise promise) {
         Activity currentActivity = getCurrentActivity();
+
+        quality = options.hasKey("pictureQuality") ? options.getInt("pictureQuality") : 100;
+        nrofphotos =  options.hasKey("photoNumber") ? options.getInt("photoNumber") : 1;
 
         scanPromise = promise;
 
