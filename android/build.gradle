@@ -37,9 +37,9 @@ android {
     defaultConfig {
         minSdkVersion _minSdkVersion
         targetSdkVersion _targetSdkVersion
-        versionCode 7
+        versionCode 8
         // get version name from package.json version
-        versionName "1.0.7"
+        versionName "1.0.8"
     }
     lintOptions {
         abortOnError false
@@ -70,6 +70,4 @@ dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
     implementation 'androidx.appcompat:appcompat:1.0.0'
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
-    implementation 'pub.devrel:easypermissions:3.0.0'
-    implementation 'com.github.pqpo:SmartCropper:v2.1.3'
 }

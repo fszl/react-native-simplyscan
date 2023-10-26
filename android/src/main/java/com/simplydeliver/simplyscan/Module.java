@@ -3,6 +3,7 @@ package com.simplydeliver.simplyscan;
 import android.app.Activity;
 import android.graphics.BitmapFactory;
 import android.content.Context;
+import android.content.IntentFilter;
 import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -37,46 +38,36 @@ import java.lang.StringBuilder;
 
 public class Module extends ReactContextBaseJavaModule implements ActivityEventListener {
 
-    File photoFile;
-    private Context context;
+    private BroadcastReceiver receiver;
     private Promise scanPromise;
-    private static final String EXTRA_FROM_ALBUM = "extra_from_album";
-    private static final String EXTRA_CROPPED_FILE = "extra_cropped_file";
  
-    int quality;
-    int nrofphotos;
+    String bundleid;
 
     @Override
     public void onNewIntent(Intent intent) {
     }
 
-    @Override
-    public void onActivityResult(Activity activity, int requestCode, int resultCode, Intent data) {
-    }
-
-    private final ActivityEventListener mActivityEventListener = new BaseActivityEventListener() {
-        @Override
-        public void onActivityResult(Activity activity, int requestCode, int resultCode, Intent data) {
-            super.onActivityResult(requestCode, resultCode, data);
-            /*if (resultCode != RESULT_OK) {
-                return;
-            }*/
-            if (requestCode == 100 && photoFile.exists()) {
-
-                /*Bitmap bitmap = BitmapFactory.decodeFile(photoFile.getPath());
-                String photo = BitMapToString(bitmap);*/
-                if (scanPromise != null) {
-                    scanPromise.resolve(photoFile.getPath());
-                }
-            }
-            scanPromise = null;
-        }
-    };
-
     public Module(ReactApplicationContext reactContext) {
         super(reactContext);
         context = reactContext;
         reactContext.addActivityEventListener(mActivityEventListener);
+
+        IntentFilter filter = new IntentFilter();
+        filter.addAction("com.gears42.action.CUSTOM_PROPERTY");
+
+        receiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                String key = intent.getString("key");
+                String value = intent.getString("value");
+                String data_type = intent.getString("data_type");
+                if (scanPromise != null) {
+                    scanPromise.resolve(value);
+                    scanPromise = null;
+                }
+            }
+        };
+        registerReceiver(receiver, filter);
     }
 
     @Override
@@ -84,52 +75,25 @@ public class Module extends ReactContextBaseJavaModule implements ActivityEventL
         return "SimplyScanView";
     }
 
+    @Override
+    protected void onDestroy() {
+        if (receiver != null) {
+        unregisterReceiver(receiver);
+            receiver = null;
+        }
+        super.onDestroy();
+    }
+
     @ReactMethod
     public void startScan(ReadableMap options, final Promise promise) {
-        Activity currentActivity = getCurrentActivity();
-
-        quality = options.hasKey("pictureQuality") ? options.getInt("pictureQuality") : 100;
-        nrofphotos =  options.hasKey("photoNumber") ? options.getInt("photoNumber") : 1;
-
         scanPromise = promise;
 
-        photoFile = new File(context.getExternalFilesDir("img"), generateUniqueFileName() + ".jpg");
+        bundleid = options.hasKey("bundleid") ? options.getInt("bundleid") : "com.simplydeliver.transmissiondriver";
 
-        Intent intent = new Intent(context, CropActivity.class);
-        intent.putExtra(EXTRA_FROM_ALBUM, false);
-        intent.putExtra(EXTRA_CROPPED_FILE, photoFile);
-
-        currentActivity.startActivityForResult(CropActivity.getJumpIntent(context, false, photoFile), 100);
+        Intent lIntent = new Intent("com.gears42.action.REQUEST_CUSTOM_PROPERTIES");
+        lIntent.putExtra("sender_package_name", bundleid);
+        lIntent.putExtra("property_key", "macaddress");
+        lIntent.setPackage("com.nix");
+        sendBroadcast(lIntent, "gears42.permission.REQUEST_CUSTOM_PROPERTIES");
     }
-
-    public String BitMapToString(Bitmap bitmap){
-        ByteArrayOutputStream baos = new  ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.JPEG,100, baos);
-        byte [] b = baos.toByteArray();
-        String temp= Base64.encodeToString(b, Base64.DEFAULT);
-        return temp;
-   }
-
-   public String generateUniqueFileName() {
-        String filename = "";
-        long millis = System.currentTimeMillis();
-        Date date = Calendar.getInstance().getTime();
-  
-        DateFormat dateFormat = new SimpleDateFormat("yyyy-mm-dd hh:mm:ss");  
-        String datetime = dateFormat.format(date);  
-        datetime = datetime.replace(" ", "");
-        datetime = datetime.replace("-", "");
-        datetime = datetime.replace(":", "");
-
-        String ALLOWED_CHARACTERS ="0123456789qwertyuiopasdfghjklzxcvbnm";
-        Random random = new Random();
-        StringBuilder sb = new StringBuilder(16);
-        for(int i = 0; i < 16; ++i) {
-            sb.append(ALLOWED_CHARACTERS.charAt(random.nextInt(ALLOWED_CHARACTERS.length())));
-        }
-    
-        filename = sb.toString() + "_" + datetime + "_" + millis;
-        return filename;
-    }
-
 }
