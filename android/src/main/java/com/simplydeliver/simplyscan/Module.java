@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.graphics.BitmapFactory;
 import android.content.Context;
 import android.content.IntentFilter;
+import android.content.BroadcastReceiver;
 import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -36,21 +37,17 @@ import java.io.ByteArrayOutputStream;
 import android.util.Base64;
 import java.lang.StringBuilder;
 
-public class Module extends ReactContextBaseJavaModule implements ActivityEventListener {
+public class Module extends ReactContextBaseJavaModule {
 
     private BroadcastReceiver receiver;
     private Promise scanPromise;
+    Context context;
  
     String bundleid;
-
-    @Override
-    public void onNewIntent(Intent intent) {
-    }
 
     public Module(ReactApplicationContext reactContext) {
         super(reactContext);
         context = reactContext;
-        reactContext.addActivityEventListener(mActivityEventListener);
 
         IntentFilter filter = new IntentFilter();
         filter.addAction("com.gears42.action.CUSTOM_PROPERTY");
@@ -58,16 +55,17 @@ public class Module extends ReactContextBaseJavaModule implements ActivityEventL
         receiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
-                String key = intent.getString("key");
-                String value = intent.getString("value");
-                String data_type = intent.getString("data_type");
+                // String value = intent.getStringExtra("value");
+                String key = intent.getStringExtra("key");
+                String value = intent.getStringExtra("value");
+                String data_type = intent.getStringExtra("data_type");
                 if (scanPromise != null) {
                     scanPromise.resolve(value);
                     scanPromise = null;
                 }
             }
         };
-        registerReceiver(receiver, filter);
+        reactContext.registerReceiver(receiver, filter);
     }
 
     @Override
@@ -75,25 +73,16 @@ public class Module extends ReactContextBaseJavaModule implements ActivityEventL
         return "SimplyScanView";
     }
 
-    @Override
-    protected void onDestroy() {
-        if (receiver != null) {
-        unregisterReceiver(receiver);
-            receiver = null;
-        }
-        super.onDestroy();
-    }
-
     @ReactMethod
     public void startScan(ReadableMap options, final Promise promise) {
         scanPromise = promise;
 
-        bundleid = options.hasKey("bundleid") ? options.getInt("bundleid") : "com.simplydeliver.transmissiondriver";
+        bundleid = options.hasKey("bundleid") ? options.getString("bundleid") : "com.simplydeliver.transmissiondriver";
 
         Intent lIntent = new Intent("com.gears42.action.REQUEST_CUSTOM_PROPERTIES");
         lIntent.putExtra("sender_package_name", bundleid);
         lIntent.putExtra("property_key", "macaddress");
         lIntent.setPackage("com.nix");
-        sendBroadcast(lIntent, "gears42.permission.REQUEST_CUSTOM_PROPERTIES");
+        context.sendBroadcast(lIntent, "gears42.permission.REQUEST_CUSTOM_PROPERTIES");
     }
 }

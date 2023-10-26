@@ -37,9 +37,9 @@ android {
     defaultConfig {
         minSdkVersion _minSdkVersion
         targetSdkVersion _targetSdkVersion
-        versionCode 8
+        versionCode 9
         // get version name from package.json version
-        versionName "1.0.8"
+        versionName "1.0.9"
     }
     lintOptions {
         abortOnError false
