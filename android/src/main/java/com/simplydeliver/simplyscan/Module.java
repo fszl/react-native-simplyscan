@@ -55,7 +55,6 @@ public class Module extends ReactContextBaseJavaModule {
         receiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
-                // String value = intent.getStringExtra("value");
                 String key = intent.getStringExtra("key");
                 String value = intent.getStringExtra("value");
                 String data_type = intent.getStringExtra("data_type");
