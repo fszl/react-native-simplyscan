@@ -44,6 +44,7 @@ public class Module extends ReactContextBaseJavaModule {
     Context context;
  
     String bundleid;
+    String property;
 
     public Module(ReactApplicationContext reactContext) {
         super(reactContext);
@@ -55,6 +56,7 @@ public class Module extends ReactContextBaseJavaModule {
         receiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
+                // String value = intent.getStringExtra("value");
                 String key = intent.getStringExtra("key");
                 String value = intent.getStringExtra("value");
                 String data_type = intent.getStringExtra("data_type");
@@ -77,10 +79,11 @@ public class Module extends ReactContextBaseJavaModule {
         scanPromise = promise;
 
         bundleid = options.hasKey("bundleid") ? options.getString("bundleid") : "com.simplydeliver.transmissiondriver";
+        property = options.hasKey("property") ? options.getString("property") : "macaddress";
 
         Intent lIntent = new Intent("com.gears42.action.REQUEST_CUSTOM_PROPERTIES");
         lIntent.putExtra("sender_package_name", bundleid);
-        lIntent.putExtra("property_key", "macaddress");
+        lIntent.putExtra("property_key", property);
         lIntent.setPackage("com.nix");
         context.sendBroadcast(lIntent, "gears42.permission.REQUEST_CUSTOM_PROPERTIES");
     }
