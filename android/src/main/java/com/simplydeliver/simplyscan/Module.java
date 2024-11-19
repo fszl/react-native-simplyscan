@@ -66,7 +66,7 @@ public class Module extends ReactContextBaseJavaModule {
                 }
             }
         };
-        reactContext.registerReceiver(receiver, filter);
+        reactContext.registerReceiver(receiver, filter, Context.RECEIVER_NOT_EXPORTED);
     }
 
     @Override
